@@ -5,10 +5,6 @@ const fs = require('fs')
 require('dotenv').config();
 const upload = multer({ dest: 'uploads/' });
 
-// AWS_BUCKET_NAME=mystery-files
-// AWS_SECRET_KEY=m+f4jGHZcwW07rMK0LU/FGPPgqGoj0PbPMeLir2C
-// AWS_ACCESS_KEY=AKIAWOI4T7BSZMQC4R4D
-// AWS_REGION=eu-west-3
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -30,10 +26,10 @@ router.post('', upload.single('file'), function (req, res) {
         s3.upload(params, function (err, data) {
             if (err) {
                 console.log(err);
-                res.status(500).send('Error uploading file to S3');
+                res.status(500).send(err);
             } else {
                 console.log('File uploaded successfully to S3', data);
-                res.status(200).send('File uploaded successfully');
+                res.status(200).send(data);
             }
         });
     } catch (err) {
