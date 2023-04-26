@@ -17,23 +17,29 @@ const s3 = new AWS.S3({
 });
 
 router.post('', upload.single('file'), function (req, res) {
-    const fileContent = fs.readFileSync(req.file.path);
+    try {
 
-    const params = {
-        Bucket: 'mystery-files',
-        Key: req.file.originalname,
-        Body: fileContent
-    };
+        const fileContent = fs.readFileSync(req.file.path);
 
-    s3.upload(params, function (err, data) {
-        if (err) {
-            console.log(err);
-            res.status(500).send('Error uploading file to S3');
-        } else {
-            console.log('File uploaded successfully to S3', data);
-            res.status(200).send('File uploaded successfully');
-        }
-    });
+        const params = {
+            Bucket: 'mystery-files',
+            Key: req.file.originalname,
+            Body: fileContent
+        };
+
+        s3.upload(params, function (err, data) {
+            if (err) {
+                console.log(err);
+                res.status(500).send('Error uploading file to S3');
+            } else {
+                console.log('File uploaded successfully to S3', data);
+                res.status(200).send('File uploaded successfully');
+            }
+        });
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
 });
 
 module.exports = router
