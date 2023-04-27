@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const multer = require('multer');
 const fs = require('fs')
+const translit = require('transliteration');
+
 require('dotenv').config();
 const upload = multer({ dest: 'uploads/' });
 
@@ -16,10 +18,12 @@ router.post('', upload.single('file'), function (req, res) {
     try {
 
         const fileContent = fs.readFileSync(req.file.path);
-
+        const translated = translit.transliterate(req.file.originalname);
+        const key = Date.now() + translated.replace(/[^\w\d\-._]/g, "").toLowerCase();
+        console.log(key)
         const params = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Key: req.file.originalname,
+            Key: key,
             Body: fileContent
         };
 
